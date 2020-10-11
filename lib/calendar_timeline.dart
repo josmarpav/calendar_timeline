@@ -20,6 +20,7 @@ class CalendarTimeline extends StatefulWidget {
   final Color dotsColor;
   final Color dayNameColor;
   final String locale;
+  final double dayTextSize;
 
   CalendarTimeline({
     Key key,
@@ -30,6 +31,7 @@ class CalendarTimeline extends StatefulWidget {
     this.selectableDayPredicate,
     this.leftMargin = 0,
     this.dayColor,
+    this.dayTextSize,
     this.activeDayColor,
     this.activeBackgroundDayColor,
     this.monthColor,
@@ -77,7 +79,8 @@ class _CalendarTimelineState extends State<CalendarTimeline> {
   List<DateTime> _days = [];
   DateTime _selectedDate;
 
-  String get _locale => widget.locale ?? Localizations.localeOf(context).languageCode;
+  String get _locale =>
+      widget.locale ?? Localizations.localeOf(context).languageCode;
 
   @override
   void initState() {
@@ -88,8 +91,6 @@ class _CalendarTimelineState extends State<CalendarTimeline> {
       initializeDateFormatting(_locale);
     });
   }
-
-
 
   @override
   void didUpdateWidget(CalendarTimeline oldWidget) {
@@ -123,13 +124,16 @@ class _CalendarTimelineState extends State<CalendarTimeline> {
         padding: EdgeInsets.only(left: widget.leftMargin, right: 10),
         itemBuilder: (BuildContext context, int index) {
           final currentDay = _days[index];
-          final shortName = DateFormat.E(_locale).format(currentDay).capitalize();
+          final shortName =
+              DateFormat.E(_locale).format(currentDay).capitalize();
           return Row(
             children: <Widget>[
               _DayItem(
                 isSelected: _daySelectedIndex == index,
                 dayNumber: currentDay.day,
-                shortName: shortName.length > 3 ? shortName.substring(0, 3) : shortName,
+                shortName: shortName.length > 3
+                    ? shortName.substring(0, 3)
+                    : shortName,
                 onTap: () => _goToActualDay(index),
                 available: widget.selectableDayPredicate == null
                     ? true
@@ -141,7 +145,10 @@ class _CalendarTimelineState extends State<CalendarTimeline> {
                 dayNameColor: widget.dayNameColor,
               ),
               if (index == _days.length - 1)
-                SizedBox(width: MediaQuery.of(context).size.width - widget.leftMargin - 65)
+                SizedBox(
+                    width: MediaQuery.of(context).size.width -
+                        widget.leftMargin -
+                        65)
             ],
           );
         },
@@ -200,9 +207,9 @@ class _CalendarTimelineState extends State<CalendarTimeline> {
                 ),
                 if (index == _months.length - 1)
                   SizedBox(
-                      width: MediaQuery.of(context).size.width -
-                          widget.leftMargin -
-                          (monthName.length * 10),
+                    width: MediaQuery.of(context).size.width -
+                        widget.leftMargin -
+                        (monthName.length * 10),
                   )
               ],
             ),
@@ -235,8 +242,9 @@ class _CalendarTimelineState extends State<CalendarTimeline> {
   _resetCalendar(DateTime date) {
     _generateDays(date);
     _daySelectedIndex = date.month == _selectedDate.month
-      ? _days.indexOf(_days.firstWhere((dayDate) => dayDate.day == _selectedDate.day))
-      : null;
+        ? _days.indexOf(
+            _days.firstWhere((dayDate) => dayDate.day == _selectedDate.day))
+        : null;
     _controllerDay.scrollTo(
       index: _daySelectedIndex ?? 0,
       alignment: _scrollAlignment,
@@ -340,7 +348,7 @@ class _DayItem extends StatelessWidget {
     this.dayNameColor,
   }) : super(key: key);
 
-  final double height = 70.0;
+  final double height = 75.0;
   final double width = 60.0;
 
   _buildActiveDay(BuildContext context) {
@@ -360,7 +368,7 @@ class _DayItem extends StatelessWidget {
             dayNumber.toString(),
             style: TextStyle(
               color: activeDayColor ?? Colors.white,
-              fontSize: 32,
+              fontSize: widget.dayTextSize,
               fontWeight: FontWeight.bold,
               height: 0.8,
             ),
